@@ -26,10 +26,6 @@ A beautiful, minimalist weather application inspired by Samsung's UI design. Bui
 *   **JavaScript (ES6+)** (Async/Await, DOM Manipulation)
 *   **API:** [Open-Meteo](https://open-meteo.com/)
 
-## 📸 Screenshots
-
-*(Add a screenshot of your app here)*
-
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).
