@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Weather App</title>
+    <!-- Google Font: Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --text-color: #fff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #333;
+            color: var(--text-color);
+        }
+
+        /* --- Main Scene --- */
+        #scene {
+            width: 100%; height: 100%;
+            position: relative;
+            background: linear-gradient(to bottom, #4facfe, #00f2fe);
+            transition: background 1.5s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding-top: 50px;
+            overflow: hidden;
+        }
+
+        /* --- Celestial Bodies --- */
+        .orb-container {
+            position: absolute;
+            top: 60px; right: 40px;
+            width: 130px; height: 130px;
+            z-index: 1;
+        }
+
+        .orb {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            position: absolute;
+            top: 0; left: 0;
+            transition: opacity 1s, transform 1s;
+        }
+
+        .sun {
+            background: radial-gradient(circle, #FDB813, #F57F17);
+            box-shadow: 0 0 60px rgba(253, 184, 19, 0.8), 0 0 100px rgba(253, 184, 19, 0.4);
+            animation: sunPulse 4s infinite alternate;
+        }
+        
+        .moon {
+            background: radial-gradient(circle at 30% 30%, #fdfbfb, #ebedee);
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+        }
+        .moon::before { content: ''; position: absolute; top: 30%; left: 20%; width: 20px; height: 20px; background: rgba(0,0,0,0.1); border-radius: 50%; }
+        .moon::after { content: ''; position: absolute; top: 60%; left: 40%; width: 30px; height: 30px; background: rgba(0,0,0,0.1); border-radius: 50%; }
+
+        @keyframes sunPulse { from{transform: scale(1);} to{transform: scale(1.1);} }
+
+        /* --- Layers --- */
+        .cloud-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        .cloud {
+            position: absolute; background: #fff; border-radius: 50px; opacity: 0.85;
+            filter: blur(5px); animation: float 60s linear infinite;
+        }
+        @keyframes float { from { transform: translateX(-250px); } to { transform: translateX(120vw); } }
+
+        .haze-filter {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(200, 200, 200, 0.3);
+            mix-blend-mode: overlay;
+            opacity: 0; transition: opacity 1s; pointer-events: none; z-index: 10;
+        }
+
+        /* --- UI Container --- */
+        .ui-container {
+            z-index: 20;
+            width: 90%; max-width: 500px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
+            padding: 12px 25px; border-radius: 35px; margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        input {
+            background: transparent; border: none; color: #fff; font-family: inherit;
+            font-size: 1.1rem; width: 100%; text-align: left; outline: none; margin-left: 10px;
+        }
+        input::placeholder { color: rgba(255,255,255,0.8); }
+
+        .main-info { text-align: center; margin-bottom: 30px; animation: fadeIn 1s; width: 100%; }
+        .city { font-size: 2.2rem; font-weight: 500; text-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .temp { font-size: 8rem; font-weight: 100; line-height: 1; margin: 10px 0; letter-spacing: -3px; }
+        .desc { font-size: 1.5rem; opacity: 0.95; font-weight: 300; text-transform: capitalize; }
+
+        .details-panel {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 25px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            animation: slideUp 0.6s ease-out;
+            display: none;
+        }
+        .d-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .d-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .d-label { font-size: 0.7rem; opacity: 0.8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+        .d-val { font-size: 1.1rem; font-weight: 500; }
+
+        /* --- GitHub Button Style --- */
+        .github-footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 100; /* Above clouds/haze */
+        }
+
+        .github-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .github-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn { from{opacity:0; transform: translateY(-10px);} to{opacity:1; transform: translateY(0);} }
+        @keyframes slideUp { from{opacity:0; transform: translateY(40px);} to{opacity:1; transform: translateY(0);} }
+
+    </style>
+</head>
+<body>
+
+    <div id="scene">
+        <!-- Sun/Moon Container -->
+        <div id="orbContainer" class="orb-container">
+            <div id="theOrb" class="orb sun"></div>
+        </div>
+
+        <!-- Clouds & Haze -->
+        <div id="clouds" class="cloud-layer"></div>
+        <div id="hazeOverlay" class="haze-filter"></div>
+
+        <!-- Main UI -->
+        <div class="ui-container">
+            <div class="search-box">
+                <i class="fas fa-search" onclick="fetchData()" style="cursor:pointer; opacity:0.8;"></i>
+                <input type="text" id="cityInput" placeholder="Enter city name..." autocomplete="off">
+            </div>
+
+            <p id="loader" style="display:none; font-weight:300; font-size:1.1rem;">Updating weather...</p>
+
+            <div id="mainInfo" class="main-info" style="display:none">
+                <div class="city" id="cityName">---</div>
+                <div class="temp" id="tempVal">0°</div>
+                <div class="desc" id="weatherDesc">---</div>
+            </div>
+
+            <div id="details" class="details-panel">
+                <div class="d-item">
+                    <i class="fas fa-temperature-high d-icon"></i>
+                    <span class="d-label">Real Feel</span>
+                    <span class="d-val" id="realFeel">---</span>
+                </div>
+                <div class="d-item">
+                    <i class="fas fa-tint d-icon"></i>
+                    <span class="d-label">Humidity</span>
+                    <span class="d-val" id="humidVal">---</span>
+                </div>
+                <div class="d-item">
+                    <i class="fas fa-wind d-icon"></i>
+                    <span class="d-label">Wind</span>
+                    <span class="d-val" id="windVal">---</span>
+                </div>
+                <div class="d-item">
+                    <i class="fas fa-sun d-icon"></i>
+                    <span class="d-label">UV Index</span>
+                    <span class="d-val" id="uvVal">---</span>
+                </div>
+                <div class="d-item">
+                    <i class="fas fa-eye d-icon"></i>
+                    <span class="d-label">Visibility</span>
+                    <span class="d-val" id="visVal">---</span>
+                </div>
+                <div class="d-item">
+                    <i class="fas fa-tachometer-alt d-icon"></i>
+                    <span class="d-label">Pressure</span>
+                    <span class="d-val" id="pressureVal">---</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GitHub Footer Link -->
+        <div class="github-footer">
+            <!-- 🔴 CHANGE THE HREF BELOW TO YOUR GITHUB URL 🔴 -->
+            <a href="https://github.com/Erfan-8910/Weather-APP"_blank" class="github-btn">
+                <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                <span>View on GitHub</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const scene = document.getElementById('scene');
+        const theOrb = document.getElementById('theOrb');
+        const hazeOverlay = document.getElementById('hazeOverlay');
+        const cloudLayer = document.getElementById('clouds');
+
+        // --- Cloud Generator ---
+        function makeClouds(count, type) {
+            cloudLayer.innerHTML = '';
+            for(let i=0; i<count; i++){
+                const c = document.createElement('div');
+                c.className = 'cloud';
+                const w = Math.random()*120 + 80;
+                c.style.width = w + 'px'; c.style.height = (w*0.55) + 'px';
+                c.style.top = Math.random()*60 + '%';
+                c.style.left = (Math.random()*100) + '%';
+                c.style.animationDuration = (Math.random()*40+30) + 's';
+                c.style.opacity = Math.random() * 0.4 + 0.5;
+
+                if(type === 'dark') { c.style.background = '#78909c'; }
+                
+                cloudLayer.appendChild(c);
+            }
+        }
+
+        // --- Visual Logic ---
+        function updateVisuals(isDay, code) {
+            if(isDay) {
+                theOrb.className = 'orb sun';
+            } else {
+                theOrb.className = 'orb moon';
+            }
+
+            const isRain = code >= 51;
+            const isSnow = code >= 71;
+            const isCloudy = code > 2;
+            const isFog = code >= 45 && code <= 48; 
+
+            let bg = '';
+            if(!isDay) {
+                bg = isCloudy ? 'linear-gradient(to bottom, #37474f, #455a64)' : 'linear-gradient(to bottom, #0f2027, #203a43)';
+            } else {
+                if(isRain || isSnow) bg = 'linear-gradient(to bottom, #546e7a, #78909c)';
+                else if(isFog) bg = 'linear-gradient(to bottom, #cfd8dc, #eceff1)';
+                else if(isCloudy) bg = 'linear-gradient(to bottom, #78909c, #b0bec5)';
+                else bg = 'linear-gradient(to bottom, #4facfe, #00f2fe)'; 
+            }
+            scene.style.background = bg;
+
+            if(isFog) {
+                hazeOverlay.style.opacity = 0.5;
+                makeClouds(2, 'white');
+            } else {
+                hazeOverlay.style.opacity = 0;
+                if(isRain || isSnow) makeClouds(8, 'dark');
+                else if(isCloudy) makeClouds(6, 'white');
+                else makeClouds(2, 'white');
+            }
+        }
+
+        async function fetchData() {
+            const city = document.getElementById('cityInput').value;
+            if(!city) return;
+
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('mainInfo').style.display = 'none';
+            document.getElementById('details').style.display = 'none';
+
+            try {
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en`);
+                const geoData = await geoRes.json();
+                if(!geoData.results) throw new Error('City not found. Please try again.');
+                
+                const { latitude, longitude, name } = geoData.results[0];
+
+                const api = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,surface_pressure&hourly=visibility&daily=uv_index_max&timezone=auto`;
+                
+                const res = await fetch(api);
+                const data = await res.json();
+                const cur = data.current;
+
+                const currentHour = new Date().getHours();
+                const vis = data.hourly.visibility[currentHour];
+                const uv = data.daily.uv_index_max[0];
+
+                document.getElementById('cityName').innerText = name;
+                document.getElementById('tempVal').innerText = Math.round(cur.temperature_2m) + '°';
+                document.getElementById('realFeel').innerText = Math.round(cur.apparent_temperature) + '°';
+                document.getElementById('humidVal').innerText = cur.relative_humidity_2m + '%';
+                document.getElementById('uvVal').innerText = uv;
+                document.getElementById('windVal').innerText = cur.wind_speed_10m + ' km/h';
+                document.getElementById('visVal').innerText = vis ? (vis/1000).toFixed(1) + ' km' : '-';
+                document.getElementById('pressureVal').innerText = cur.surface_pressure + ' hPa';
+
+                let desc = 'Clear Sky';
+                const code = cur.weather_code;
+                if(code > 0 && code <= 3) desc = 'Partly Cloudy';
+                if(code >= 45 && code <= 48) desc = 'Fog';
+                if(code >= 51 && code <= 67) desc = 'Rain / Drizzle';
+                if(code >= 71 && code <= 77) desc = 'Snow';
+                if(code >= 80) desc = 'Showers';
+                if(code >= 95) desc = 'Thunderstorm';
+                
+                document.getElementById('weatherDesc').innerText = desc;
+
+                updateVisuals(cur.is_day, code);
+
+                document.getElementById('mainInfo').style.display = 'block';
+                document.getElementById('details').style.display = 'grid';
+
+            } catch(e) {
+                alert(e.message);
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        makeClouds(3, 'white');
+
+        document.getElementById("cityInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") fetchData();
+        });
+    </script>
+</body>
+</html>
