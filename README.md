@@ -1,4 +1,4 @@
-# 🌦️ Smart Weather Dashboard (v2.0)
+# 🌦️ Modern Weather App (v2.0.0)
 
 A high-performance, visually stunning weather application featuring a custom **Canvas Rendering Engine** and **Glassmorphism** UI. Built with vanilla JavaScript, it delivers real-time atmospheric simulations and accurate weather data without requiring an API key.
 
