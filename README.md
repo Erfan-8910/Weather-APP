@@ -14,7 +14,7 @@ The original project was a lightweight, single-file weather application built wi
 
 ---
 
-## ⚡ 2. Version 3.1 Architecture (The Overhaul)
+## ⚡ 2. Version 3.0 Architecture (The Overhaul)
 Version 3.1 builds upon the original logic but refactors the entire frontend and introduces a dynamic engine for visuals.
 
 ### 🎨 UI/UX Redesign (Glassmorphism)
@@ -67,7 +67,7 @@ This is the heart of V3. The background and visuals now react to data:
 *   **API:** [Open-Meteo](https://open-meteo.com/)
 
 ## 📸 Screenshots
-### v3.1 (Ultimate Edition)
+### v3.0 (Ultimate Edition)
 
 ### v2.0 (New Interface)
 Soon ...
