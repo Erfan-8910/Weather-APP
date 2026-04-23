@@ -2,6 +2,10 @@
 
 This major update transforms the project from a minimal weather tool into a fully immersive, "Atmosphere-focused" weather station. Below is the breakdown of the architectural evolution.
 
+
+
+New Version is Coming Soon ...
+
 ## 🏗️ 1. Original Structure (Legacy V2)
 The original project was a lightweight, single-file weather application built with Vanilla JS.
 *   **Core Logic:** It utilized direct fetching from the Open-Meteo API to display current weather and basic daily forecasts.
