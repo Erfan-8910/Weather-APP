@@ -4,7 +4,7 @@ The Ultra-Glassmorphic SPA Harmonizing Real-Time Meteorology with Deep Cognitive
 
 This project originally started as a simple, standard Weather App. However, as we reimagined its purpose, it evolved from a simple forecast viewer into a mindful daily companion. We renamed the project Climind (derived from the classical Latin Aether — the pure, clear upper air of the sky) to reflect this ultimate fusion. It represents the perfect harmony between the atmosphere outside and the mental clarity inside (Flow State).
 
-[Try Climind Live](https://erfan-8910.github.io/Weather-APP/) • [Report Bug](https://github.com/Erfan-8910/Weather-APP/issues) • [Request Feature](https://github.com/Erfan-8910/Weather-APP/issues)
+[Try Climind Live](https://erfan-8910.github.io/Climind-W) • [Report Bug](https://github.com/Erfan-8910/Weather-APP/issues) • [Request Feature](https://github.com/Erfan-8910/Weather-APP/issues)
 
 ## Features
 
